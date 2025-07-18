@@ -3,6 +3,7 @@ import '../data/lap_data.dart';
 import 'lap_top_state.dart';
 
 
+
 class LaptopsCubit extends Cubit<LaptopsState> {
   final LaptopRepo repo;
 

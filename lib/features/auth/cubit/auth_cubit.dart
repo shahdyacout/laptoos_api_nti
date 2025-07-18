@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 
 import '../data/auth_data.dart';
@@ -48,40 +48,29 @@ class AuthCubit extends Cubit<AuthState> {
       profileImage: profileImage??"",
 
     );
-    // إذا كان التسجيل ناجح، احفظ nationalId
-    if (model.status == "success") {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('nationalId', nationalId.trim());
-      // استدعي دالة login لحفظ nationalId وتفعيل AuthSuccess
-      await login(nationalId.trim());
-    }
     emit(AddSuccess(model: model));
   }
-
-  Future<void> login(String nationalId) async {
+  void login(String nationalId) async {
     emit(AuthLoading());
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('nationalId', nationalId.trim());
-      emit(AuthSuccess(nationalId.trim()));
+      final result = await authData.login(nationalId); // لسه هنعملها كمان شوية
+      if (result != null) {
+        emit(AuthSuccess());
+      } else {
+        emit(AuthFailure(error: "Invalid ID or user not found."));
+      }
     } catch (e) {
-      emit(AuthFailure(e.toString()));
+      emit(AuthFailure(error: e.toString()));
     }
   }
-
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('nationalId');
-    emit(AuthInitial());
-  }
-
-  Future<void> checkLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getString('nationalId');
-    if (id != null) {
-      emit(AuthSuccess(id));
+  void checkLogin() {
+    // مثال على التحقق، حسب ما هتعملي منطقك
+    if (/* أي شرط */ false) {
+      emit(AuthSuccess());
     } else {
       emit(AuthInitial());
     }
   }
+
 }

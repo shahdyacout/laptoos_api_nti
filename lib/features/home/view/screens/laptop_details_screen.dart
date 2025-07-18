@@ -1,14 +1,12 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubit/lap_top_cubit.dart';
 import '../../cubit/lap_top_state.dart';
 import '../../data/model/laptop_model.dart';
+import 'home_screen.dart';
 import 'laptop_details_screen.dart';
 import '../../../favorite/cubit/favorite_cubit.dart';
 import '../../../favorite/cubit/favorite_state.dart';
-import '../../../cart/cubit/cart_cubit.dart';
 import '../../../cart/cubit/cart_state.dart';
 import '../../../favorite/view/favorite_screen.dart';
 import '../../../cart/view/cart_screen.dart';
@@ -100,7 +98,10 @@ class LaptopScreen extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     final laptop = laps[index];
-                    return LaptopItemCard(laptop: laptop);
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 75), // space below card
+                      child: LaptopItemCard(laptop: laptop),
+                    );
                   },
                 ),
               );
@@ -191,8 +192,7 @@ class LaptopItemCard extends StatelessWidget {
                           cartCubit.addToCart(laptop.id);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content:
-                              Text('${laptop.title} added to cart!'),
+                              content: Text('${laptop.title} added to cart!'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -216,8 +216,7 @@ class LaptopItemCard extends StatelessWidget {
                       ),
                       onPressed: () async {
                         await favoriteCubit.toggleFavorite(laptop);
-                        final newIsFav =
-                        favoriteCubit.isFavorite(laptop);
+                        final newIsFav = favoriteCubit.isFavorite(laptop);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(newIsFav
@@ -228,7 +227,8 @@ class LaptopItemCard extends StatelessWidget {
                       },
                     ),
                   ],
-                )
+                ),
+                // حذفت الـ SizedBox(height: 40) لأنها مش لازمة لما ندي margin للكارد من بره
               ],
             ),
           ),

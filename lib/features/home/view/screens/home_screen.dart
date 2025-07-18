@@ -1,139 +1,119 @@
-import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../cart/cubit/cart_cubit.dart';
-import '../../../cart/view/cart_screen.dart';
-import '../../../favorite/cubit/favorite_cubit.dart';
-import '../../../favorite/view/favorite_screen.dart';
-import '../../cubit/lap_top_cubit.dart';
-import '../../cubit/lap_top_state.dart';
-import '../../data/model/laptop_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class LaptopsScreen extends StatelessWidget {
-  const LaptopsScreen({super.key});
+import '../../../cart/cubit/cart_state.dart';
+import '../../data/model/cart_model.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Laptops'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const FavoritesScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CartScreen()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<LaptopsCubit, LaptopsState>(
-        builder: (context, state) {
-          if (state is LaptopsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is LaptopsError) {
-            return Center(child: Text('Error: ${state.message}'));
-          } else if (state is LaptopsEmpty) {
-            return const Center(child: Text('No laptops available.'));
-          } else if (state is LaptopsSuccess) {
-            return ListView.builder(
-              itemCount: state.laptops.length,
-              itemBuilder: (context, index) {
-                final laptop = state.laptops[index];
-                final favoritesCubit = context.read<FavoritesCubit>();
-                final cartCubit = context.read<CartCubit>();
-                final isFav = favoritesCubit.isFavorite(laptop);
 
-                return Card(
-                  margin: const EdgeInsets.all(10),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: Image.network(
-                            laptop.image,
-                            width: 60,
-                            errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.image_not_supported),
-                          ),
-                          title: Text(laptop.title),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Price: \$${laptop.price.toStringAsFixed(2)}'),
-                              const SizedBox(height: 4),
-                              Text(
-                                laptop.description,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: Icon(
-                              isFav ? Icons.favorite : Icons.favorite_border,
-                              color: isFav ? Colors.red : Colors.grey,
-                            ),
-                            onPressed: () async {
-                              await favoritesCubit.toggleFavorite(laptop);
-                              final isNowFav = favoritesCubit.isFavorite(laptop);
+class CartCubit extends Cubit<CartState> {
+  CartCubit() : super(CartInitial());
+  final Dio dio = Dio();
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(isNowFav
-                                      ? 'Added to favorites'
-                                      : 'Removed from favorites'),
-                                  duration: const Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton.icon(
-                            onPressed: () async {
-                              await cartCubit.addToCart(laptop.id);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("Added to cart"),
-                                  duration: Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                            icon: const Icon(Icons.add_shopping_cart),
-                            label: const Text("Add to Cart"),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          } else {
-            return const SizedBox();
-          }
-        },
-      ),
+  _getNationalId() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? id = prefs.getString('nationalId');
+    if (id != null) {
+      id = id.trim();
+    }
+    return id;
+  }
+
+  Future<void> addToCart(String productId) async {
+    emit(CartLoading());
+    // try {
+    //   final nationalId = await _getNationalId();
+    //   print('CartCubit: Using nationalId: > $nationalId<');
+    //   if (nationalId == null || nationalId.isEmpty) {
+    //     emit(CartError('لم يتم العثور على الرقم القومي. الرجاء تسجيل الدخول أولاً.'));
+    //     return;
+
+    var repo = await dio.post(
+      "https://elwekala.onrender.com/cart/add",
+      data: {
+        "nationalId": "01009876567876",
+        "productId": productId,
+        "quantity": "1",
+      },
     );
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    emit(CartSuccess());
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    print(repo.data);
+    await getCart();
+  }
+
+
+  Future<void> getCart() async {
+    emit(CartLoading());
+
+    var response = await dio.get(
+      "https://elwekala.onrender.com/cart/allProducts",
+      data: {
+        "nationalId": "01009876567876",        },
+    );
+    print('getCart response: \n${response.data}');
+    List data = response.data["products"];
+    List<CartModel> list = data.map((e) => CartModel.fromJson(e)).toList();
+    emit(CartUpdated(list));
+  }
+
+
+
+  Future<void> deleteFromCart(String productId) async {
+    emit(CartLoading());
+
+    await dio.delete(
+      "https://elwekala.onrender.com/cart/delete",
+      data: {
+        "nationalId": "01009876567876",
+        "productId": productId,
+      },
+    );
+    emit(CartSuccess());
+    await getCart();
+
+  }
+
+  Future<void> updateCart(String productId, int quantity) async {
+    emit(CartLoading());
+    try {
+      final nationalId = await _getNationalId();
+      print('CartCubit: Using nationalId: > 0$nationalId<');
+      if (nationalId == null || nationalId.isEmpty) {
+        emit(CartError('لم يتم العثور على الرقم القومي. الرجاء تسجيل الدخول أولاً.'));
+        return;
+      }
+      await dio.put(
+        "https://elwekala.onrender.com/cart",
+        data: {
+          "nationalId": nationalId,
+          "productId": productId,
+          "quantity": quantity,
+        },
+      );
+      emit(CartSuccess());
+      await getCart();
+    } catch (e) {
+      emit(CartError(e.toString()));
+    }
   }
 }

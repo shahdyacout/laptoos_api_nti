@@ -1,23 +1,23 @@
 
 
 
+
 import '../data/model/response_model.dart';
 
-abstract class AuthState {}
+sealed class AuthState {}
 
-class AuthInitial extends AuthState {}
-class AuthLoading extends AuthState {}
-class AuthSuccess extends AuthState {
-  final String nationalId;
-  AuthSuccess(this.nationalId);
-}
-class AuthFailure extends AuthState {
-  final String error;
-  AuthFailure(this.error);
-}
-// دعم شاشة التسجيل القديمة
-class AddSuccess extends AuthState {
-  final ResponseModel model;
+final class AuthInitial extends AuthState {}
+
+final class AddSuccess extends AuthState {
+  final ResponseModel  model;
+
   AddSuccess({required this.model});
 }
-class AuthImage extends AuthState {}
+
+final class AuthLoading extends AuthState {}
+final class AuthImage extends AuthState {}
+final class AuthSuccess extends AuthState {}
+final class AuthFailure extends AuthState {
+  final String error;
+  AuthFailure({required this.error});
+}

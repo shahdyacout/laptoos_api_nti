@@ -18,3 +18,8 @@ final class LaptopsError extends LaptopsState {
 }
 
 final class LaptopsEmpty extends LaptopsState {}
+
+
+sealed class LapTopState {}
+
+final class LapTopInitial extends LapTopState {}

@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 
 import 'model/response_model.dart';
 
-
 class AuthData{
   final Dio dio =Dio();
   register (
@@ -47,4 +46,13 @@ profileImage      }
 }
 
   }
+  Future<bool?> login(String nationalId) async {
+    // دي محاكاة login، لازم تغيرها بالـ API الحقيقي
+    if (nationalId == "01001234567890") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }

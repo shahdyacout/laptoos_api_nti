@@ -1,4 +1,5 @@
-import 'cart_cubit.dart';
+import '../../home/data/model/cart_model.dart';
+
 
 abstract class CartState {}
 

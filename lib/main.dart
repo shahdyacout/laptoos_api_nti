@@ -7,7 +7,6 @@ import 'features/auth/view/login_screen.dart';
 import 'features/home/data/model/favorite_data.dart';
 import 'features/home/view/screens/home_screen.dart';
 import 'features/favorite/cubit/favorite_cubit.dart';
-import 'features/cart/cubit/cart_cubit.dart';
 import 'features/home/view/screens/laptop_details_screen.dart';
 import 'package:provider/provider.dart';
 
